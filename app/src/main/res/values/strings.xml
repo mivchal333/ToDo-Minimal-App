@@ -17,4 +17,12 @@
     <string name="button_save">Save</string>
     <string name="todo">ToDo</string>
     <string name="todo_deleted">ToDo successfuly deleted!</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Theme -->
+    <string name="theme_header">Theme</string>
+    <string name="enable_dark_mode">Enable dark mode</string>
+    <string name="default_header">Default values</string>
+    <string name="default_title">Default title</string>
+    <string name="default_title_description">Enter default title in new todo task</string>
 </resources>
