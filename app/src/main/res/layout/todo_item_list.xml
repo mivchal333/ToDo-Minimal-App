@@ -2,7 +2,18 @@
     android:id="@+id/todo_item"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="?attr/minTouchTargetSize"
     android:padding="6dip">
+
+    <ImageView
+        android:id="@+id/todo_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp" />
 
     <TextView
         android:id="@+id/todo_description"
@@ -17,13 +28,17 @@
 
     <TextView
         android:id="@+id/todo_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_above="@id/todo_description"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:gravity="center_vertical"
-        android:textSize="16sp" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:textAppearance="?attr/textAppearanceSubtitle1" />
 </RelativeLayout>
