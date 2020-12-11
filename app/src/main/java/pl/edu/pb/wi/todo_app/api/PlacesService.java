@@ -8,4 +8,7 @@ import retrofit2.http.Query;
 public interface PlacesService {
     @GET("place/textsearch/json?key=AIzaSyCEQnz3Yj3sMQXE-_goms43yW-CbtZeyRE")
     Call<PlacesContainer> findPlaces(@Query("query") String query);
+
+    @GET("place/textsearch/json?key=AIzaSyCEQnz3Yj3sMQXE-_goms43yW-CbtZeyRE")
+    Call<PlacesContainer> findPlacesByLocation(@Query("query") String query, @Query("location") String location);
 }
