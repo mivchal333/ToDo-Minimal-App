@@ -25,4 +25,6 @@
     <string name="default_header">Default values</string>
     <string name="default_title">Default title</string>
     <string name="default_title_description">Enter default title in new todo task</string>
+    <string name="hint_todo_place">Place</string>
+    <string name="button_search">Search</string>
 </resources>

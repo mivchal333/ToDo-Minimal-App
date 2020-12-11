@@ -31,6 +31,26 @@
         android:padding="@dimen/small_padding"
         android:textSize="18sp" />
 
+    <EditText
+        android:id="@+id/edit_todo_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_padding"
+        android:layout_marginBottom="@dimen/big_padding"
+        android:autofillHints=""
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/hint_todo_place"
+        android:inputType="textAutoComplete"
+        android:padding="@dimen/small_padding"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/button_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/button_color"
+        android:text="@string/button_search" />
+
     <Button
         android:id="@+id/button_save"
         android:layout_width="match_parent"

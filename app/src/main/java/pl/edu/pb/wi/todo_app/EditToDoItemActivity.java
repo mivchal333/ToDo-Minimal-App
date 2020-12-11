@@ -14,9 +14,12 @@ public class EditToDoItemActivity extends AppCompatActivity {
 
     public static final String EXTRA_EDIT_TODO_TITLE = "pb.edu.pl.EDIT_BOOK_TITLE";
     public static final String EXTRA_EDIT_TODO_DESCRIPTION = "pb.edu.pl.EDIT_BOOK_AUThOR";
+    public static final String EXTRA_SEARCH_PLACE_QUERY = "pb.edu.pl.EDIT_BOOK_AUThOR";
 
     private EditText editTitleEditText;
     private EditText editAuthorEditText;
+    private final int SEARCH_PLACE_ACTIVITY_REQUEST_CODE = 3;
+    private EditText editTodoPlaceText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +29,13 @@ public class EditToDoItemActivity extends AppCompatActivity {
 
         editTitleEditText = findViewById(R.id.edit_todo_title);
         editAuthorEditText = findViewById(R.id.edit_todo_description);
+        editTodoPlaceText = findViewById(R.id.edit_todo_place);
         if (getIntent().hasExtra(EXTRA_EDIT_TODO_TITLE)) {
             editTitleEditText.setText(getIntent().getStringExtra(EXTRA_EDIT_TODO_TITLE));
             editAuthorEditText.setText(getIntent().getStringExtra(EXTRA_EDIT_TODO_DESCRIPTION));
         }
         final Button button = findViewById(R.id.button_save);
+        final Button searchButton = findViewById(R.id.button_search);
         button.setOnClickListener(e -> {
             Intent replyIntent = new Intent();
             if (TextUtils.isEmpty(editTitleEditText.getText())
@@ -44,6 +49,11 @@ public class EditToDoItemActivity extends AppCompatActivity {
                 setResult(RESULT_OK, replyIntent);
             }
             finish();
+        });
+        searchButton.setOnClickListener(e -> {
+            Intent intent = new Intent(EditToDoItemActivity.this, SearchPlaceActivity.class);
+            intent.putExtra(EXTRA_SEARCH_PLACE_QUERY, editTodoPlaceText.getText().toString());
+            startActivityForResult(intent, SEARCH_PLACE_ACTIVITY_REQUEST_CODE);
         });
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
