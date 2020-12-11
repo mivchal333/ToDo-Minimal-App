@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
-    public static final String BOOK_API_URL = "https://maps.googleapis.com/maps/api";
+    public static final String BOOK_API_URL = "https://maps.googleapis.com/maps/api/";
     private static Retrofit retrofit;
 
     public static Retrofit getInstance() {

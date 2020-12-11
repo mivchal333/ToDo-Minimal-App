@@ -2,6 +2,7 @@ package pl.edu.pb.wi.todo_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 
+import pl.edu.pb.wi.todo_app.api.PlacesService;
+import pl.edu.pb.wi.todo_app.api.RetrofitInstance;
 import pl.edu.pb.wi.todo_app.api.model.Place;
+import pl.edu.pb.wi.todo_app.api.model.PlacesContainer;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static pl.edu.pb.wi.todo_app.EditToDoItemActivity.EXTRA_SEARCH_PLACE_QUERY;
 
 
 public class SearchPlaceActivity extends AppCompatActivity {
@@ -27,14 +38,38 @@ public class SearchPlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_place);
-        RecyclerView recyclerView = findViewById(R.id.places_recycler);
 
+        PlacesService bookService = RetrofitInstance.getInstance().create(PlacesService.class);
+        String inputQuery = getIntent().getStringExtra(EXTRA_SEARCH_PLACE_QUERY);
+        String finalQuery = prepareQuery(inputQuery);
+        Call<PlacesContainer> booksApiCall = bookService.findPlaces(finalQuery);
+        booksApiCall.enqueue(new Callback<PlacesContainer>() {
+            @Override
+            public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
+                if (response.code() == 200 && response.body() != null)
+                    setupPlacesListView(response.body().getPlaces());
+            }
 
-        final PlaceAdapter adapter = new PlaceAdapter();
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            @Override
+            public void onFailure(Call<PlacesContainer> call, Throwable t) {
+                Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.fail_message),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
+    }
 
+    private void setupPlacesListView(List<Place> places) {
+        RecyclerView view = findViewById(R.id.places_recycler);
+        PlaceAdapter bookAdapter = new PlaceAdapter();
+        bookAdapter.setPlaces(places);
+        view.setAdapter(bookAdapter);
+        view.setLayoutManager(new LinearLayoutManager(this));
+    }
 
+    private String prepareQuery(String query) {
+        String[] queryParts = query.split("\\s+");
+        return TextUtils.join("+", queryParts);
     }
 
     private class PlaceHolder extends RecyclerView.ViewHolder {
