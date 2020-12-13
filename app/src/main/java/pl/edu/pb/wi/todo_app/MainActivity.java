@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -167,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         .useFont(Typeface.DEFAULT)
                         .toUpperCase()
                         .endConfig()
-                        .buildRound(toDoItem.getTitle().substring(0, 1), ColorGenerator.MATERIAL.getRandomColor());
+                        .buildRound(toDoItem.getTitle().substring(0, 1), toDoItem.getColor());
 
                 holder.mColorImageView.setImageDrawable(myDrawable);
                 holder.bind(toDoItem);

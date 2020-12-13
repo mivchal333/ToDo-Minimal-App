@@ -35,9 +35,24 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:hint="@string/hint_todo_date">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_todo_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:editable="false"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="268dp"
+        android:layout_height="219dp"
         android:orientation="horizontal">
 
         <com.google.android.material.textfield.TextInputLayout

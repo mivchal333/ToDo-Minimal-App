@@ -19,6 +19,8 @@ public class ToDoItem implements Serializable {
     private String placeAddress;
     private String placeName;
     private PlaceType placeType;
+    private int color;
+
 
     public ToDoItem() {
     }
@@ -84,5 +86,13 @@ public class ToDoItem implements Serializable {
             return date.getTime();
         }
         return null;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

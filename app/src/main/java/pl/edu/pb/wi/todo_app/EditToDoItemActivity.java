@@ -1,6 +1,10 @@
 package pl.edu.pb.wi.todo_app;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -8,11 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.Date;
+import java.util.Locale;
 
 import pl.edu.pb.wi.todo_app.database.entity.PlaceType;
 import pl.edu.pb.wi.todo_app.database.entity.ToDoItem;
@@ -23,18 +32,25 @@ import static pl.edu.pb.wi.todo_app.MainActivity.NEW_TODO_ACTIVITY_REQUEST_CODE;
 import static pl.edu.pb.wi.todo_app.SearchPlaceActivity.EXTRA_PLACE_ADDRESS;
 import static pl.edu.pb.wi.todo_app.SearchPlaceActivity.EXTRA_PLACE_NAME;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class EditToDoItemActivity extends AppCompatActivity {
 
     public static final String EXTRA_EDIT_TODO_ID = "pb.edu.pl.EDIT_BOOK_TITLE";
     public static final String EXTRA_SEARCH_PLACE_QUERY = "pb.edu.pl.EDIT_BOOK_AUThOR";
     int MIN_SEARCH_INPUT_LENGTH = 3;
+    public final String DATE_PATTERN = "dd-MM-yyyy";
+    public final String EXTRA_REQUEST_CODE = "requestCode";
 
+
+    final Calendar calendar = Calendar.getInstance();
     private EditText editTitleEditText;
     private EditText editDescriptionEditText;
+    private EditText editTodoDateText;
     private final int SEARCH_PLACE_ACTIVITY_REQUEST_CODE = 3;
     private EditText editTodoPlaceText;
     private String placeAddress;
     private String placeName;
+    private Date selectedDate;
     private PlaceType placeType = PlaceType.CUSTOM;
     private ToDoItemViewModel toDoItemViewModel;
     private ToDoItem currentTodo;
@@ -44,20 +60,39 @@ public class EditToDoItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_todo);
-        requestCode = getIntent().getIntExtra("requestCode", NEW_TODO_ACTIVITY_REQUEST_CODE);
+        this.requestCode = getIntent().getIntExtra(EXTRA_REQUEST_CODE, NEW_TODO_ACTIVITY_REQUEST_CODE);
 
+        editTodoDateText = (EditText) findViewById(R.id.edit_todo_date);
+        DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
+        };
+
+        editTodoDateText.setOnClickListener(v -> {
+            new DatePickerDialog(EditToDoItemActivity.this, date, calendar
+                    .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)).show();
+        });
 
         editTitleEditText = findViewById(R.id.edit_todo_title);
         editDescriptionEditText = findViewById(R.id.edit_todo_description);
         editTodoPlaceText = findViewById(R.id.edit_todo_place);
         toDoItemViewModel = ViewModelProviders.of(this).get(ToDoItemViewModel.class);
-        if (requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
+        if (this.requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
             int selectedItemId = getIntent().getIntExtra(EXTRA_EDIT_TODO_ID, 0);
             toDoItemViewModel.findById(selectedItemId).observe(this, toDoItem -> {
                 this.currentTodo = toDoItem;
                 editTitleEditText.setText(toDoItem.getTitle());
                 editDescriptionEditText.setText(toDoItem.getDescription());
                 editTodoPlaceText.setText(getToDoPlaceLabel(toDoItem));
+                Long toDoItemDate = toDoItem.getDate();
+                if (toDoItemDate != null) {
+                    calendar.setTimeInMillis(toDoItemDate);
+                    selectedDate = new Date(toDoItemDate);
+                    updateLabel(selectedDate);
+                }
             });
         } else {
             currentTodo = new ToDoItem();
@@ -75,6 +110,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
                 currentTodo.setTitle(title);
                 currentTodo.setDescription(description);
                 currentTodo.setPlaceType(placeType);
+                currentTodo.setDate(selectedDate.getTime());
                 if (placeType.equals(PlaceType.DEFINED)) {
                     currentTodo.setPlaceAddress(placeAddress);
                     currentTodo.setPlaceName(placeName);
@@ -83,9 +119,10 @@ public class EditToDoItemActivity extends AppCompatActivity {
                     currentTodo.setPlaceAddress(null);
                 }
 
-                if (requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
+                if (this.requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
                     toDoItemViewModel.update(currentTodo);
                 } else {
+                    currentTodo.setColor(ColorGenerator.MATERIAL.getRandomColor());
                     toDoItemViewModel.insert(currentTodo);
                 }
                 currentTodo = null;
@@ -127,6 +164,20 @@ public class EditToDoItemActivity extends AppCompatActivity {
         return sb.toString();
     }
 
+    private void updateLabel() {
+        this.selectedDate = calendar.getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+        String formattedDate = simpleDateFormat.format(selectedDate);
+        editTodoDateText.setText(formattedDate);
+    }
+
+    private void updateLabel(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+        String formattedDate = simpleDateFormat.format(date);
+        editTodoDateText.setText(formattedDate);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -146,5 +197,4 @@ public class EditToDoItemActivity extends AppCompatActivity {
         }
         return true;
     }
-
 }
