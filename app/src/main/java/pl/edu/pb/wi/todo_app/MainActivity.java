@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -113,8 +115,9 @@ public class MainActivity extends AppCompatActivity {
     private class ToDoItemHolder extends RecyclerView.ViewHolder {
         private final TextView toDoItemTitleTextView;
         private final TextView toDoItemDescriptionTextView;
+        private final CheckBox todoItemDoneCheckbox;
         private ToDoItem toDoItem;
-        ImageView mColorImageView;
+        ImageView toDoImageView;
 
 
         public ToDoItemHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -122,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
             toDoItemTitleTextView = itemView.findViewById(R.id.todo_title);
             toDoItemDescriptionTextView = itemView.findViewById(R.id.todo_description);
-            mColorImageView = (ImageView) itemView.findViewById(R.id.todo_image);
+            toDoImageView = itemView.findViewById(R.id.todo_image);
+            todoItemDoneCheckbox = itemView.findViewById(R.id.todo_done_checkbox);
             View toDoItemItem = itemView.findViewById(R.id.todo_item);
             toDoItemItem.setOnLongClickListener(v -> {
                 toDoItemViewModel.delete(toDoItem);
@@ -137,11 +141,18 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_ID, toDoItem.getId());
                 startActivityForResult(intent, EDIT_TODO_ACTIVITY_REQUEST_CODE);
             });
+            todoItemDoneCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (toDoItem != null) {
+                    toDoItem.setDone(isChecked);
+                    toDoItemViewModel.update(toDoItem);
+                }
+            });
         }
 
         public void bind(ToDoItem toDoItem) {
             toDoItemTitleTextView.setText(toDoItem.getTitle());
             toDoItemDescriptionTextView.setText(toDoItem.getDescription());
+            todoItemDoneCheckbox.setChecked(toDoItem.isDone());
             this.toDoItem = toDoItem;
         }
     }
@@ -168,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                         .endConfig()
                         .buildRound(toDoItem.getTitle().substring(0, 1), toDoItem.getColor());
 
-                holder.mColorImageView.setImageDrawable(myDrawable);
+                holder.toDoImageView.setImageDrawable(myDrawable);
                 holder.bind(toDoItem);
 
             } else {

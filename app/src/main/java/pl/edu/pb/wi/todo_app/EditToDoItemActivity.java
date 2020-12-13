@@ -62,7 +62,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_todo);
         this.requestCode = getIntent().getIntExtra(EXTRA_REQUEST_CODE, NEW_TODO_ACTIVITY_REQUEST_CODE);
 
-        editTodoDateText = (EditText) findViewById(R.id.edit_todo_date);
+        editTodoDateText = findViewById(R.id.edit_todo_date);
         DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, monthOfYear);
@@ -110,7 +110,9 @@ public class EditToDoItemActivity extends AppCompatActivity {
                 currentTodo.setTitle(title);
                 currentTodo.setDescription(description);
                 currentTodo.setPlaceType(placeType);
-                currentTodo.setDate(selectedDate.getTime());
+                if (selectedDate != null) {
+                    currentTodo.setDate(selectedDate.getTime());
+                }
                 if (placeType.equals(PlaceType.DEFINED)) {
                     currentTodo.setPlaceAddress(placeAddress);
                     currentTodo.setPlaceName(placeName);

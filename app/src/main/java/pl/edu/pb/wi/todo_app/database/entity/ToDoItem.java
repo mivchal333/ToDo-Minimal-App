@@ -20,6 +20,7 @@ public class ToDoItem implements Serializable {
     private String placeName;
     private PlaceType placeType;
     private int color;
+    private boolean done;
 
 
     public ToDoItem() {
@@ -43,6 +44,14 @@ public class ToDoItem implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
     }
 
     public void setDescription(String description) {

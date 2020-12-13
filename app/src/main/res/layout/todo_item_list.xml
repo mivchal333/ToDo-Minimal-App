@@ -25,6 +25,7 @@
         android:orientation="horizontal"
         android:paddingLeft="10dp">
 
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -52,6 +53,16 @@
                 android:ellipsize="marquee"
                 android:singleLine="true"
                 android:textSize="16sp" />
+
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/todo_done_checkbox"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical" />
+
     </LinearLayout>
 </LinearLayout>
