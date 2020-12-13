@@ -21,7 +21,9 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/list_main" />
+    <include
+        layout="@layout/list_main"
+        android:padding="10dp" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -12,6 +12,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import pl.edu.pb.wi.todo_app.database.entity.PlaceType;
 import pl.edu.pb.wi.todo_app.database.entity.ToDoItem;
 import pl.edu.pb.wi.todo_app.view.ToDoItemViewModel;
@@ -24,9 +26,8 @@ import static pl.edu.pb.wi.todo_app.SearchPlaceActivity.EXTRA_PLACE_NAME;
 public class EditToDoItemActivity extends AppCompatActivity {
 
     public static final String EXTRA_EDIT_TODO_ID = "pb.edu.pl.EDIT_BOOK_TITLE";
-    public static final String EXTRA_EDIT_TODO_DESCRIPTION = "pb.edu.pl.EDIT_BOOK_AUThOR";
     public static final String EXTRA_SEARCH_PLACE_QUERY = "pb.edu.pl.EDIT_BOOK_AUThOR";
-    public static final String EXTRA_EDIT_TODO_PLACE = "EXTRA_EDIT_TODO_PLACE";
+    int MIN_SEARCH_INPUT_LENGTH = 3;
 
     private EditText editTitleEditText;
     private EditText editDescriptionEditText;
@@ -93,8 +94,15 @@ public class EditToDoItemActivity extends AppCompatActivity {
             finish();
         });
         searchButton.setOnClickListener(e -> {
+            String searchQueryInput = editTodoPlaceText.getText().toString();
+            if (searchQueryInput.length() < MIN_SEARCH_INPUT_LENGTH) {
+                Snackbar.make(findViewById(R.id.searchMainLayout), getResources().getString(R.string.search_input_too_short),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+                return;
+            }
             Intent intent = new Intent(EditToDoItemActivity.this, SearchPlaceActivity.class);
-            intent.putExtra(EXTRA_SEARCH_PLACE_QUERY, editTodoPlaceText.getText().toString());
+            intent.putExtra(EXTRA_SEARCH_PLACE_QUERY, searchQueryInput);
             startActivityForResult(intent, SEARCH_PLACE_ACTIVITY_REQUEST_CODE);
         });
         ActionBar actionBar = getSupportActionBar();

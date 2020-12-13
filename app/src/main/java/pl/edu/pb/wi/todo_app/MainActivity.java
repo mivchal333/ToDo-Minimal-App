@@ -1,6 +1,8 @@
 package pl.edu.pb.wi.todo_app;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +21,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -110,12 +115,15 @@ public class MainActivity extends AppCompatActivity {
         private final TextView toDoItemTitleTextView;
         private final TextView toDoItemDescriptionTextView;
         private ToDoItem toDoItem;
+        ImageView mColorImageView;
+
 
         public ToDoItemHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.todo_item_list, parent, false));
 
             toDoItemTitleTextView = itemView.findViewById(R.id.todo_title);
             toDoItemDescriptionTextView = itemView.findViewById(R.id.todo_description);
+            mColorImageView = (ImageView) itemView.findViewById(R.id.todo_image);
             View toDoItemItem = itemView.findViewById(R.id.todo_item);
             toDoItemItem.setOnLongClickListener(v -> {
                 toDoItemViewModel.delete(toDoItem);
@@ -150,9 +158,20 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ToDoItemHolder holder, int position) {
+
+
             if (toDoItems != null) {
                 ToDoItem toDoItem = toDoItems.get(position);
+                TextDrawable myDrawable = TextDrawable.builder().beginConfig()
+                        .textColor(Color.WHITE)
+                        .useFont(Typeface.DEFAULT)
+                        .toUpperCase()
+                        .endConfig()
+                        .buildRound(toDoItem.getTitle().substring(0, 1), ColorGenerator.MATERIAL.getRandomColor());
+
+                holder.mColorImageView.setImageDrawable(myDrawable);
                 holder.bind(toDoItem);
+
             } else {
                 Log.d("MainActivity", "No toDoItems");
             }

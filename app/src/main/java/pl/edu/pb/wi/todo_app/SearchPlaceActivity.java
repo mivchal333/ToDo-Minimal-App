@@ -95,8 +95,17 @@ public class SearchPlaceActivity extends AppCompatActivity {
         Callback<PlacesContainer> setPlacesCallback = new Callback<PlacesContainer>() {
             @Override
             public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
-                if (response.code() == 200 && response.body() != null && response.body().getPlaces() != null)
-                    setupPlacesListView(response.body().getPlaces());
+                if (response.code() == 200 && response.body() != null) {
+                    List<Place> places = response.body().getPlaces();
+                    if (places != null) {
+                        setupPlacesListView(places);
+                        if (places.isEmpty()) {
+                            Snackbar.make(findViewById(R.id.searchMainLayout), getResources().getString(R.string.no_places),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                }
                 spinner.setVisibility(View.GONE);
             }
 
