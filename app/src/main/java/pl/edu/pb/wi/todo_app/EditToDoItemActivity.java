@@ -73,9 +73,13 @@ public class EditToDoItemActivity extends AppCompatActivity {
                 String description = editDescriptionEditText.getText().toString();
                 currentTodo.setTitle(title);
                 currentTodo.setDescription(description);
-                currentTodo.setPlaceName(placeName);
-                currentTodo.setPlaceAddress(placeAddress);
                 currentTodo.setPlaceType(placeType);
+                if (placeType.equals(PlaceType.DEFINED)) {
+                    currentTodo.setPlaceAddress(placeAddress);
+                    currentTodo.setPlaceName(placeName);
+                } else {
+                    currentTodo.setPlaceName(editTodoPlaceText.getText().toString());
+                }
 
                 if (requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
                     toDoItemViewModel.update(currentTodo);
@@ -103,10 +107,15 @@ public class EditToDoItemActivity extends AppCompatActivity {
     }
 
     public String getToDoPlaceLabel(String name, String address) {
-        if (name != null || address != null) {
-            return name + ", " + address;
-
-        } else return "";
+        StringBuilder sb = new StringBuilder();
+        if (name != null) {
+            sb.append(name);
+        }
+        if (address != null) {
+            sb.append(", ");
+            sb.append(address);
+        }
+        return sb.toString();
     }
 
     @Override
