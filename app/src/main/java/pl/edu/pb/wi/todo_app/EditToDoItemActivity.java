@@ -133,7 +133,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
         searchButton.setOnClickListener(e -> {
             String searchQueryInput = editTodoPlaceText.getText().toString();
             if (searchQueryInput.length() < MIN_SEARCH_INPUT_LENGTH) {
-                Snackbar.make(findViewById(R.id.searchMainLayout), getResources().getString(R.string.search_input_too_short),
+                Snackbar.make(findViewById(R.id.activityEditLayoutRl), getResources().getString(R.string.search_input_too_short),
                         Snackbar.LENGTH_LONG)
                         .show();
                 return;
@@ -144,6 +144,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
         });
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setTitle(R.string.edit_todo_tile);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

@@ -31,4 +31,5 @@
     <string name="no_places">No search results. Please type other name</string>
     <string name="search_input_too_short">"Please type at least three character "</string>
     <string name="hint_todo_date">Date</string>
+    <string name="edit_todo_tile">Edit</string>
 </resources>
