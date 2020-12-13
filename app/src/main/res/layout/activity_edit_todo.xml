@@ -40,8 +40,11 @@
         android:autofillHints=""
         android:fontFamily="sans-serif-light"
         android:hint="@string/hint_todo_place"
-        android:inputType="textAutoComplete"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:minLines="6"
         android:padding="@dimen/small_padding"
+        android:scrollbars="vertical"
         android:textSize="18sp" />
 
     <Button

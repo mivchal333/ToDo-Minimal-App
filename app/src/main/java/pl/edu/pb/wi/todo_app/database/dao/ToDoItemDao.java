@@ -18,18 +18,20 @@ public interface ToDoItemDao {
     void insert(ToDoItem todo_item);
 
     @Update
-    public void update(ToDoItem todo_item);
+    void update(ToDoItem todo_item);
 
     @Delete
-    public void delete(ToDoItem todo_item);
+    void delete(ToDoItem todo_item);
 
     @Query("DELETE FROM todo_item")
-    public void deleteAll();
+    void deleteAll();
 
     @Query("SELECT * FROM todo_item ORDER BY title")
-    public LiveData<List<ToDoItem>> findAll();
+    LiveData<List<ToDoItem>> findAll();
 
     @Query("SELECT * FROM todo_item WHERE title LIKE :title")
-    public LiveData<List<ToDoItem>> findByTitle(String title);
+    LiveData<List<ToDoItem>> findByTitle(String title);
 
+    @Query("SELECT * FROM todo_item WHERE id LIKE :id")
+    LiveData<ToDoItem> findById(Integer id);
 }

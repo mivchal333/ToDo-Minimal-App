@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int EDIT_TODO_ACTIVITY_REQUEST_CODE = 2;
 
     private ToDoItemViewModel toDoItemViewModel;
-    private ToDoItem editedToDoItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        intent.putExtra("requestCode", requestCode);
+        super.startActivityForResult(intent, requestCode);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -87,24 +92,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_TODO_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            String todoTitle = data.getStringExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_TITLE);
-            String todoDescription = data.getStringExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_DESCRIPTION);
 
-            ToDoItem toDoItem = new ToDoItem();
-            toDoItem.setTitle(todoTitle);
-            toDoItem.setDescription(todoDescription);
-
-            toDoItemViewModel.insert(toDoItem);
             Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.toDoItem_added),
                     Snackbar.LENGTH_LONG).show();
         } else if (requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            String todoTitle = data.getStringExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_TITLE);
-            String todoDescription = data.getStringExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_DESCRIPTION);
-
-            editedToDoItem.setTitle(todoTitle);
-            editedToDoItem.setDescription(todoDescription);
-            toDoItemViewModel.update(editedToDoItem);
-            editedToDoItem = null;
             Snackbar.make(findViewById(R.id.coordinator_layout), getString(R.string.toDoItem_edited),
                     Snackbar.LENGTH_LONG).show();
         } else {
@@ -135,10 +126,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             });
             toDoItemItem.setOnClickListener(v -> {
-                editedToDoItem = toDoItem;
                 Intent intent = new Intent(MainActivity.this, EditToDoItemActivity.class);
-                intent.putExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_TITLE, toDoItemTitleTextView.getText());
-                intent.putExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_DESCRIPTION, toDoItemDescriptionTextView.getText());
+                intent.putExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_ID, toDoItem.getId());
                 startActivityForResult(intent, EDIT_TODO_ACTIVITY_REQUEST_CODE);
             });
         }

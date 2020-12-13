@@ -42,4 +42,7 @@ public class ToDoRepository {
         });
     }
 
+    public LiveData<ToDoItem> findById(Integer id) {
+        return toDoItemDao.findById(id);
+    }
 }

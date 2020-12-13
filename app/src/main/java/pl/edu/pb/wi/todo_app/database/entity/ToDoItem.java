@@ -16,6 +16,9 @@ public class ToDoItem implements Serializable {
     private String title;
     private String description;
     private Long date;
+    private String placeAddress;
+    private String placeName;
+    private PlaceType placeType;
 
     public ToDoItem() {
     }
@@ -44,6 +47,29 @@ public class ToDoItem implements Serializable {
         this.description = description;
     }
 
+    public String getPlaceAddress() {
+        return placeAddress;
+    }
+
+    public void setPlaceAddress(String placeAddress) {
+        this.placeAddress = placeAddress;
+    }
+
+    public String getPlaceName() {
+        return placeName;
+    }
+
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
+    }
+
+    public PlaceType getPlaceType() {
+        return placeType;
+    }
+
+    public void setPlaceType(PlaceType placeType) {
+        this.placeType = placeType;
+    }
 
     public Long getDate() {
         return date;

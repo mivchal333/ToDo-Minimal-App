@@ -26,16 +26,20 @@ public class ToDoItemViewModel extends AndroidViewModel {
         return books;
     }
 
-    public void insert(ToDoItem book) {
-        toDoRepository.insert(book);
+    public LiveData<ToDoItem> findById(Integer id) {
+        return toDoRepository.findById(id);
     }
 
-    public void update(ToDoItem book) {
-        toDoRepository.update(book);
+    public void insert(ToDoItem toDoItem) {
+        toDoRepository.insert(toDoItem);
     }
 
-    public void delete(ToDoItem book) {
-        toDoRepository.delete(book);
+    public void update(ToDoItem toDoItem) {
+        toDoRepository.update(toDoItem);
+    }
+
+    public void delete(ToDoItem toDoItem) {
+        toDoRepository.delete(toDoItem);
     }
 }
 

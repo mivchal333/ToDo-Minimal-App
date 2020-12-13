@@ -6,16 +6,19 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import pl.edu.pb.wi.todo_app.database.conventer.PlaceTypeConverter;
 import pl.edu.pb.wi.todo_app.database.dao.ToDoItemDao;
 import pl.edu.pb.wi.todo_app.database.entity.ToDoItem;
 
 @Database(entities = {ToDoItem.class}, version = 1, exportSchema = false)
+@TypeConverters(PlaceTypeConverter.class)
 public abstract class ToDoDatabase extends RoomDatabase {
 
     public abstract ToDoItemDao toDoItemDao();
@@ -36,6 +39,7 @@ public abstract class ToDoDatabase extends RoomDatabase {
                 toDoItem.setTitle("Title");
                 toDoItem.setDescription("Description");
                 toDoItem.setDate(new Date().getTime());
+
                 dao.insert(toDoItem);
             });
         }
@@ -47,6 +51,7 @@ public abstract class ToDoDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             ToDoDatabase.class, "todo_db")
+                            .fallbackToDestructiveMigration()
                             .addCallback(sRoomDatabaseCallback)
                             .build();
                 }

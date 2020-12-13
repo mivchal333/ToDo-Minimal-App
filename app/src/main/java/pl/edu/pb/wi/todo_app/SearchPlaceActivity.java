@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -36,50 +35,18 @@ import retrofit2.Response;
 import static pl.edu.pb.wi.todo_app.EditToDoItemActivity.EXTRA_SEARCH_PLACE_QUERY;
 
 
-public class SearchPlaceActivity extends AppCompatActivity implements LocationListener {
+public class SearchPlaceActivity extends AppCompatActivity {
 
-    private final String EXTRA_PLACE_NAME = "EXTRA_PLACE_NAME";
-    private final String EXTRA_PLACE_FORMATTED_ADDRESS = "EXTRA_PLACE_FORMATTED_ADDRESS";
+    public static final String EXTRA_PLACE_NAME = "EXTRA_PLACE_NAME";
+    public static final String EXTRA_PLACE_ADDRESS = "EXTRA_PLACE_FORMATTED_ADDRESS";
     private final int GPS_PERMISSION_REQUEST_CODE = 1;
 
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
-    protected Context context;
-    protected double latitude;
-    protected double longitude;
-    protected boolean gps_enabled, network_enabled;
-    TextView txtLat;
-    String lat;
-    String provider;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == GPS_PERMISSION_REQUEST_CODE) {
-            Log.e("TAG!", "PERMISSION_GRANTEd");
-
-            PlacesService bookService = RetrofitInstance.getInstance().create(PlacesService.class);
-            String inputQuery = getIntent().getStringExtra(EXTRA_SEARCH_PLACE_QUERY);
-            String finalQuery = prepareQueryParam(inputQuery);
-            Call<PlacesContainer> booksApiCall;
-
-            String finalLocationParam = prepareLocationParam(latitude, longitude);
-
-            booksApiCall = bookService.findPlacesByLocation(finalQuery, finalLocationParam);
-            booksApiCall.enqueue(new Callback<PlacesContainer>() {
-                @Override
-                public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
-                    if (response.code() == 200 && response.body() != null)
-                        setupPlacesListView(response.body().getPlaces());
-                }
-
-                @Override
-                public void onFailure(Call<PlacesContainer> call, Throwable t) {
-                    Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.fail_message),
-                            Snackbar.LENGTH_LONG)
-                            .show();
-                }
-            });
-
+            loadSuggestedPlaces();
         }
     }
 
@@ -88,46 +55,65 @@ public class SearchPlaceActivity extends AppCompatActivity implements LocationLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_place);
 
-        PlacesService bookService = RetrofitInstance.getInstance().create(PlacesService.class);
-        String inputQuery = getIntent().getStringExtra(EXTRA_SEARCH_PLACE_QUERY);
-        String finalQueryParam = prepareQueryParam(inputQuery);
-        Call<PlacesContainer> booksApiCall;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (!isLocationPermissionDenied()) {
+            loadSuggestedPlaces();
+        } else {
+            Log.d("SearchPlaceActivity", "Permissions denied. Asking...");
+            askForLocationPermissions();
+        }
+    }
+
+    private void askForLocationPermissions() {
+        ActivityCompat
+                .requestPermissions(
+                        SearchPlaceActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        GPS_PERMISSION_REQUEST_CODE);
+    }
+
+    private boolean isLocationPermissionDenied() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                        != PackageManager.PERMISSION_GRANTED;
+    }
 
-            Log.e("TAG!", "FAIL");
-            ActivityCompat
-                    .requestPermissions(
-                            SearchPlaceActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                            GPS_PERMISSION_REQUEST_CODE);
+    private void loadSuggestedPlaces() {
+        String inputQuery = getIntent().getStringExtra(EXTRA_SEARCH_PLACE_QUERY);
 
-        } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            this.longitude = lastKnownLocation.getLongitude();
-            this.latitude = lastKnownLocation.getLatitude();
-            String finalLocationParam = prepareLocationParam(latitude, longitude);
-
-            booksApiCall = bookService.findPlacesByLocation(finalQueryParam, finalLocationParam);
-            booksApiCall.enqueue(new Callback<PlacesContainer>() {
-                @Override
-                public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
-                    if (response.code() == 200 && response.body() != null)
-                        setupPlacesListView(response.body().getPlaces());
-                }
-
-                @Override
-                public void onFailure(Call<PlacesContainer> call, Throwable t) {
-                    Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.fail_message),
-                            Snackbar.LENGTH_LONG)
-                            .show();
-                }
-            });
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e("SearchPlaceActivity", "Permissions denied. Finishing activity");
+            finish();
+            return;
         }
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Callback<PlacesContainer> setPlacesCallback = new Callback<PlacesContainer>() {
+            @Override
+            public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
+                if (response.code() == 200 && response.body() != null && response.body().getPlaces() != null)
+                    setupPlacesListView(response.body().getPlaces());
+            }
+
+            @Override
+            public void onFailure(Call<PlacesContainer> call, Throwable t) {
+                Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.fail_message),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+        };
+        fetchPlaces(inputQuery, lastKnownLocation, setPlacesCallback);
+    }
+
+    private void fetchPlaces(String inputQuery, Location location, Callback<PlacesContainer> setPlacesCallback) {
+        PlacesService bookService = RetrofitInstance.getInstance().create(PlacesService.class);
+        Call<PlacesContainer> booksApiCall;
+        String finalLocationParam = prepareLocationParam(location.getLatitude(), location.getLongitude());
+        String finalQueryParam = prepareQueryParam(inputQuery);
+
+        booksApiCall = bookService.findPlacesByLocation(finalQueryParam, finalLocationParam);
+        booksApiCall.enqueue(setPlacesCallback);
     }
 
     private String prepareLocationParam(double latitude, double longitude) {
@@ -146,12 +132,6 @@ public class SearchPlaceActivity extends AppCompatActivity implements LocationLi
     private String prepareQueryParam(String query) {
         String[] queryParts = query.split("\\s+");
         return TextUtils.join("+", queryParts);
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        this.latitude = location.getLatitude();
-        this.longitude = location.getLongitude();
     }
 
     private class PlaceHolder extends RecyclerView.ViewHolder {
@@ -173,7 +153,7 @@ public class SearchPlaceActivity extends AppCompatActivity implements LocationLi
                 replyIntent.putExtra(EXTRA_PLACE_NAME, name);
 
                 String formattedAddress = place.getFormattedAddress();
-                replyIntent.putExtra(EXTRA_PLACE_FORMATTED_ADDRESS, formattedAddress);
+                replyIntent.putExtra(EXTRA_PLACE_ADDRESS, formattedAddress);
                 setResult(RESULT_OK, replyIntent);
                 finish();
             });
@@ -202,6 +182,10 @@ public class SearchPlaceActivity extends AppCompatActivity implements LocationLi
                 holder.bind(place);
             } else {
                 Log.d("SearchPlaceActivity", "No places");
+                Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.no_places),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+
             }
         }
 
