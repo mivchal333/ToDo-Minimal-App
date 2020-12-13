@@ -4,10 +4,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -93,6 +95,17 @@ public class EditToDoItemActivity extends AppCompatActivity {
                     selectedDate = new Date(toDoItemDate);
                     updateLabel(selectedDate);
                 }
+                if (PlaceType.DEFINED.equals(currentTodo.getPlaceType())) {
+                    final Button navButton = findViewById(R.id.button_nav);
+                    navButton.setVisibility(View.VISIBLE);
+
+                    navButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("google.navigation:q=" + currentTodo.getPlaceAddress()));
+                        startActivity(intent);
+
+                    });
+                }
             });
         } else {
             currentTodo = new ToDoItem();
@@ -146,7 +159,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
         });
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(R.string.edit_todo_tile);
+            actionBar.setTitle(R.string.title_details);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }

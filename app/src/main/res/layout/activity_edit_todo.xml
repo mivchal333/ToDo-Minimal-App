@@ -86,15 +86,34 @@
                     android:padding="@dimen/small_padding"
                     android:scrollbars="vertical"
                     android:textSize="18sp" />
+
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/button_search"
-                android:layout_width="58dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/button_color"
-                android:gravity="end"
-                app:icon="@drawable/ic_baseline_search_24" />
+                android:orientation="vertical"
+
+                >
+
+                <Button
+                    android:id="@+id/button_search"
+                    android:layout_width="58dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/button_color"
+                    app:icon="@drawable/ic_baseline_search_24" />
+
+                <Button
+                    android:id="@+id/button_nav"
+                    android:layout_width="58dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:background="@color/button_color"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_baseline_navigation_24" />
+            </LinearLayout>
         </LinearLayout>
 
 

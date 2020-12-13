@@ -92,7 +92,12 @@ public class SearchPlaceActivity extends AppCompatActivity {
             return;
         }
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Callback<PlacesContainer> setPlacesCallback = new Callback<PlacesContainer>() {
+
+        fetchPlaces(inputQuery, lastKnownLocation, fetchPlacesCallback());
+    }
+
+    private Callback<PlacesContainer> fetchPlacesCallback() {
+        return new Callback<PlacesContainer>() {
             @Override
             public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -118,7 +123,6 @@ public class SearchPlaceActivity extends AppCompatActivity {
                 finish();
             }
         };
-        fetchPlaces(inputQuery, lastKnownLocation, setPlacesCallback);
     }
 
     private void fetchPlaces(String inputQuery, Location location, Callback<PlacesContainer> setPlacesCallback) {
