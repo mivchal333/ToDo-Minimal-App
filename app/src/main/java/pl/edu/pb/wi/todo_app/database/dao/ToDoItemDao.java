@@ -34,4 +34,7 @@ public interface ToDoItemDao {
 
     @Query("SELECT * FROM todo_item WHERE id LIKE :id")
     LiveData<ToDoItem> findById(Integer id);
+
+    @Query("SELECT * FROM TODO_ITEM WHERE title LIKE '%' || :query || '%'")
+    LiveData<List<ToDoItem>> search(String query);
 }

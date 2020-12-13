@@ -30,6 +30,10 @@ public class ToDoItemViewModel extends AndroidViewModel {
         return toDoRepository.findById(id);
     }
 
+    public LiveData<List<ToDoItem>> search(String query) {
+        return toDoRepository.search(query);
+    }
+
     public void insert(ToDoItem toDoItem) {
         toDoRepository.insert(toDoItem);
     }

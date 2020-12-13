@@ -7,26 +7,44 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.TodoApp.AppBarOverlay">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.TodoApp.PopupOverlay"
-            app:subtitleTextColor="@color/white"
-            app:titleTextColor="@color/white" />
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.TodoApp.AppBarOverlay">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/Theme.TodoApp.PopupOverlay"
+                app:subtitleTextColor="@color/white"
+                app:titleTextColor="@color/white" />
 
-    <include
-        layout="@layout/list_main"
-        android:padding="10dp" />
+        </com.google.android.material.appbar.AppBarLayout>
 
+
+        <SearchView
+            android:id="@+id/simpleSearchView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search View">
+
+            <requestFocus />
+        </SearchView>
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/list_main"
+            android:padding="10dp" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_button"
@@ -36,8 +54,9 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/todo"
         android:src="@drawable/ic_baseline_add_24"
+        android:tint="@color/white"
         app:backgroundTint="@color/purple_500"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:tint="@color/white"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

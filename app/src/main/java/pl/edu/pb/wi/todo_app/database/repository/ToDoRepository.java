@@ -45,4 +45,8 @@ public class ToDoRepository {
     public LiveData<ToDoItem> findById(Integer id) {
         return toDoItemDao.findById(id);
     }
+
+    public LiveData<List<ToDoItem>> search(String query) {
+        return toDoItemDao.search(query);
+    }
 }

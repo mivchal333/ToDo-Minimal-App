@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,11 +34,12 @@ import pl.edu.pb.wi.todo_app.settings.SettingsActivity;
 import pl.edu.pb.wi.todo_app.view.ToDoItemViewModel;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     public static final int NEW_TODO_ACTIVITY_REQUEST_CODE = 1;
     public static final int EDIT_TODO_ACTIVITY_REQUEST_CODE = 2;
-
+    SearchView editsearch;
+    ToDoItemAdapter adapter;
     private ToDoItemViewModel toDoItemViewModel;
 
     @Override
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final ToDoItemAdapter adapter = new ToDoItemAdapter();
+        adapter = new ToDoItemAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         });
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        editsearch = findViewById(R.id.simpleSearchView);
+        editsearch.setOnQueryTextListener(this);
     }
 
     @Override
@@ -110,6 +115,21 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar.LENGTH_LONG)
                     .show();
         }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if (newText.length() > 1) {
+            toDoItemViewModel.search(newText).observe(this, adapter::setToDoItems);
+        } else {
+            toDoItemViewModel.findAll().observe(this, adapter::setToDoItems);
+        }
+        return false;
     }
 
     private class ToDoItemHolder extends RecyclerView.ViewHolder {
