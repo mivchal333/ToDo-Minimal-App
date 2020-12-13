@@ -79,6 +79,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
                     currentTodo.setPlaceName(placeName);
                 } else {
                     currentTodo.setPlaceName(editTodoPlaceText.getText().toString());
+                    currentTodo.setPlaceAddress(null);
                 }
 
                 if (requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {

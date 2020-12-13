@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +41,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
     public static final String EXTRA_PLACE_NAME = "EXTRA_PLACE_NAME";
     public static final String EXTRA_PLACE_ADDRESS = "EXTRA_PLACE_FORMATTED_ADDRESS";
     private final int GPS_PERMISSION_REQUEST_CODE = 1;
-
+    private ProgressBar spinner;
     protected LocationManager locationManager;
 
     @Override
@@ -54,6 +55,9 @@ public class SearchPlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_place);
+        spinner = findViewById(R.id.progressBar2);
+        spinner.setVisibility(View.VISIBLE);
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!isLocationPermissionDenied()) {
@@ -93,6 +97,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
             public void onResponse(Call<PlacesContainer> call, Response<PlacesContainer> response) {
                 if (response.code() == 200 && response.body() != null && response.body().getPlaces() != null)
                     setupPlacesListView(response.body().getPlaces());
+                spinner.setVisibility(View.GONE);
             }
 
             @Override
@@ -100,6 +105,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.main_layout), getResources().getString(R.string.fail_message),
                         Snackbar.LENGTH_LONG)
                         .show();
+                spinner.setVisibility(View.GONE);
                 finish();
             }
         };
