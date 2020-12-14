@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#149C27B0"
         android:orientation="vertical">
 
 
@@ -35,7 +36,7 @@
             android:layout_width="374dp"
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
-            android:queryHint="Search View">
+            android:queryHint="@string/hint_search">
 
         </SearchView>
 

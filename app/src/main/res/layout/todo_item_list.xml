@@ -25,7 +25,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp">
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
             <ImageView
                 android:id="@+id/todo_image"
@@ -44,14 +45,12 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_toLeftOf="@+id/todo_done_checkbox"
+                android:layout_toRightOf="@+id/todo_image"
                 android:gravity="center_vertical"
                 android:maxLines="2"
                 android:paddingEnd="16dp"
                 android:paddingRight="16dp"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textSize="18sp"
-                android:layout_toRightOf="@+id/todo_image"
-                android:textStyle="bold" />
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <TextView
                 android:id="@+id/todo_description"
@@ -60,9 +59,10 @@
                 android:layout_below="@+id/todo_title"
                 android:layout_marginLeft="10dp"
                 android:layout_toLeftOf="@+id/todo_done_checkbox"
-                android:maxLines="3"
                 android:layout_toRightOf="@+id/todo_image"
-                android:textSize="16sp"
+                android:maxLines="3"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
 
                 />
 
@@ -74,7 +74,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:width="30dp"
-                android:gravity="center"
+                android:gravity="top"
                 android:minWidth="30dp" />
 
 
