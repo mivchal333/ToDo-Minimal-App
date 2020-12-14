@@ -36,7 +36,7 @@
     <string name="title_input_empty">Type title, please</string>
     <string-array name="task_state_options">
         <item>All</item>
-        <item>Not done</item>
+        <item>To Do</item>
         <item>Done</item>
     </string-array>
 </resources>
