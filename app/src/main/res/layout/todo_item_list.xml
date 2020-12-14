@@ -8,8 +8,7 @@
     android:gravity="center"
     android:minHeight="?attr/minTouchTargetSize"
     android:orientation="horizontal"
-    android:padding="6dip"
-
+    android:padding="3dip"
     >
 
     <com.google.android.material.card.MaterialCardView
@@ -17,9 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_margin="8dp"
-        android:layout_marginTop="10dp"
-        card_view:cardCornerRadius="4dp">
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        card_view:cardCornerRadius="5dp">
 
 
         <RelativeLayout
