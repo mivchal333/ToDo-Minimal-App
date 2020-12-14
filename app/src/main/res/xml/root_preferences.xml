@@ -9,13 +9,4 @@
 
     </PreferenceCategory>
 
-
-    <PreferenceCategory app:title="@string/theme_header">
-
-        <SwitchPreferenceCompat
-            app:key="darkMode"
-            app:title="@string/enable_dark_mode" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>

@@ -2,6 +2,7 @@ package pl.edu.pb.wi.todo_app;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,6 +44,7 @@ public class EditToDoItemActivity extends AppCompatActivity {
     int MIN_SEARCH_INPUT_LENGTH = 3;
     public final String DATE_PATTERN = "dd-MM-yyyy";
     public final String EXTRA_REQUEST_CODE = "requestCode";
+    String PREFERENCE_DEFAULT_TITLE_KEY = "default_title";
 
 
     final Calendar calendar = Calendar.getInstance();
@@ -83,40 +86,47 @@ public class EditToDoItemActivity extends AppCompatActivity {
         editTodoPlaceText = findViewById(R.id.edit_todo_place);
         toDoItemViewModel = ViewModelProviders.of(this).get(ToDoItemViewModel.class);
         if (this.requestCode == EDIT_TODO_ACTIVITY_REQUEST_CODE) {
-            int selectedItemId = getIntent().getIntExtra(EXTRA_EDIT_TODO_ID, 0);
-            toDoItemViewModel.findById(selectedItemId).observe(this, toDoItem -> {
-                this.currentTodo = toDoItem;
-                editTitleEditText.setText(toDoItem.getTitle());
-                editDescriptionEditText.setText(toDoItem.getDescription());
-                editTodoPlaceText.setText(getToDoPlaceLabel(toDoItem));
-                Long toDoItemDate = toDoItem.getDate();
-                if (toDoItemDate != null) {
-                    calendar.setTimeInMillis(toDoItemDate);
-                    selectedDate = new Date(toDoItemDate);
-                    updateLabel(selectedDate);
-                }
-                if (PlaceType.DEFINED.equals(currentTodo.getPlaceType())) {
-                    final Button navButton = findViewById(R.id.button_nav);
-                    navButton.setVisibility(View.VISIBLE);
-
-                    navButton.setOnClickListener(v -> {
-                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                                Uri.parse("google.navigation:q=" + currentTodo.getPlaceAddress()));
-                        startActivity(intent);
-
-                    });
-                }
-            });
+            setUpEditView();
         } else {
-            currentTodo = new ToDoItem();
+            setUpCreateView();
         }
         final Button button = findViewById(R.id.button_save);
         final Button searchButton = findViewById(R.id.button_search);
-        button.setOnClickListener(e -> {
+        button.setOnClickListener(getOnSaveClickListener());
+        searchButton.setOnClickListener(getOnSearchClickListener());
+        setUpAppBar();
+    }
+
+    private void setUpAppBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.title_details);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private View.OnClickListener getOnSearchClickListener() {
+        return e -> {
+            String searchQueryInput = editTodoPlaceText.getText().toString();
+            if (searchQueryInput.length() < MIN_SEARCH_INPUT_LENGTH) {
+                Snackbar.make(findViewById(R.id.activityEditLayoutRl), getResources().getString(R.string.search_input_too_short),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+                return;
+            }
+            Intent intent = new Intent(EditToDoItemActivity.this, SearchPlaceActivity.class);
+            intent.putExtra(EXTRA_SEARCH_PLACE_QUERY, searchQueryInput);
+            startActivityForResult(intent, SEARCH_PLACE_ACTIVITY_REQUEST_CODE);
+        };
+    }
+
+    private View.OnClickListener getOnSaveClickListener() {
+        return e -> {
             Intent replyIntent = new Intent();
-            if (TextUtils.isEmpty(editTitleEditText.getText())
-                    || TextUtils.isEmpty(editDescriptionEditText.getText())) {
-                setResult(RESULT_CANCELED, replyIntent);
+            if (TextUtils.isEmpty(editTitleEditText.getText())) {
+                Snackbar.make(findViewById(R.id.activityEditLayoutRl), getResources().getString(R.string.title_input_empty),
+                        Snackbar.LENGTH_LONG)
+                        .show();
             } else {
                 String title = editTitleEditText.getText().toString();
                 String description = editDescriptionEditText.getText().toString();
@@ -144,24 +154,42 @@ public class EditToDoItemActivity extends AppCompatActivity {
                 setResult(RESULT_OK, replyIntent);
             }
             finish();
-        });
-        searchButton.setOnClickListener(e -> {
-            String searchQueryInput = editTodoPlaceText.getText().toString();
-            if (searchQueryInput.length() < MIN_SEARCH_INPUT_LENGTH) {
-                Snackbar.make(findViewById(R.id.activityEditLayoutRl), getResources().getString(R.string.search_input_too_short),
-                        Snackbar.LENGTH_LONG)
-                        .show();
-                return;
+        };
+    }
+
+    private void setUpCreateView() {
+        currentTodo = new ToDoItem();
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultTitleValue = sharedPreferences.getString(PREFERENCE_DEFAULT_TITLE_KEY, "");
+        editTitleEditText.setText(defaultTitleValue);
+    }
+
+    private void setUpEditView() {
+        int selectedItemId = getIntent().getIntExtra(EXTRA_EDIT_TODO_ID, 0);
+        toDoItemViewModel.findById(selectedItemId).observe(this, toDoItem -> {
+            this.currentTodo = toDoItem;
+            editTitleEditText.setText(toDoItem.getTitle());
+            editDescriptionEditText.setText(toDoItem.getDescription());
+            editTodoPlaceText.setText(getToDoPlaceLabel(toDoItem));
+            Long toDoItemDate = toDoItem.getDate();
+            if (toDoItemDate != null) {
+                calendar.setTimeInMillis(toDoItemDate);
+                selectedDate = new Date(toDoItemDate);
+                updateLabel(selectedDate);
             }
-            Intent intent = new Intent(EditToDoItemActivity.this, SearchPlaceActivity.class);
-            intent.putExtra(EXTRA_SEARCH_PLACE_QUERY, searchQueryInput);
-            startActivityForResult(intent, SEARCH_PLACE_ACTIVITY_REQUEST_CODE);
+            if (PlaceType.DEFINED.equals(currentTodo.getPlaceType())) {
+                final Button navButton = findViewById(R.id.button_nav);
+                navButton.setVisibility(View.VISIBLE);
+
+                navButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("google.navigation:q=" + currentTodo.getPlaceAddress()));
+                    startActivity(intent);
+
+                });
+            }
         });
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.title_details);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     public String getToDoPlaceLabel(ToDoItem toDoItem) {
