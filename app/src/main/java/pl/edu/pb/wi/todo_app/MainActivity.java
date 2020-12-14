@@ -4,11 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
+import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +21,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.List;
+
+import pl.edu.pb.wi.todo_app.database.entity.ToDoItem;
 import pl.edu.pb.wi.todo_app.settings.SettingsActivity;
 import pl.edu.pb.wi.todo_app.view.ToDoItemViewModel;
 
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, AdapterView.OnItemSelectedListener {
 
     public static final int NEW_TODO_ACTIVITY_REQUEST_CODE = 1;
     public static final int EDIT_TODO_ACTIVITY_REQUEST_CODE = 2;
     SearchView editsearch;
     ToDoItemAdapter adapter;
     private ToDoItemViewModel toDoItemViewModel;
+    private LiveData<List<ToDoItem>> liveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         toDoItemViewModel = ViewModelProviders.of(this).get(ToDoItemViewModel.class);
-        toDoItemViewModel.findAll().observe(this, adapter::setToDoItems);
+
+        liveData = toDoItemViewModel.findAll();
+        loadAllToDos();
 
         FloatingActionButton addToDoItemButton = findViewById(R.id.add_button);
         addToDoItemButton.setOnClickListener(v -> {
@@ -51,6 +62,25 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         editsearch = findViewById(R.id.simpleSearchView);
         editsearch.setOnQueryTextListener(this);
+
+        Spinner spinner = (Spinner) findViewById(R.id.filterSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.task_state_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
+
+    private void loadAllToDos() {
+        liveData.removeObservers(this);
+        liveData = toDoItemViewModel.findAll();
+        liveData.observe(this, adapter::setToDoItems);
+    }
+
+    private void loadToDosByState(boolean done) {
+        liveData.removeObservers(this);
+        liveData = toDoItemViewModel.findByDone(done);
+        liveData.observe(this, adapter::setToDoItems);
     }
 
     @Override
@@ -112,4 +142,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                loadAllToDos();
+                return;
+            case 1:
+                loadToDosByState(false);
+                return;
+            case 2:
+                loadToDosByState(true);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        loadAllToDos();
+    }
 }

@@ -31,14 +31,24 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <SearchView
-            android:id="@+id/simpleSearchView"
-            android:layout_width="374dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:iconifiedByDefault="false"
-            android:queryHint="@string/hint_search">
+            android:orientation="horizontal">
 
-        </SearchView>
+            <SearchView
+                android:id="@+id/simpleSearchView"
+                android:layout_width="265dp"
+                android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/hint_search" />
+
+            <Spinner
+                android:id="@+id/filterSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom" />
+        </LinearLayout>
 
         <include
             android:id="@+id/include"

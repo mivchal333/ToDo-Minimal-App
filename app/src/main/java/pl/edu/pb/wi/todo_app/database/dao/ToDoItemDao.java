@@ -29,12 +29,15 @@ public interface ToDoItemDao {
     @Query("SELECT * FROM todo_item ORDER BY title")
     LiveData<List<ToDoItem>> findAll();
 
-    @Query("SELECT * FROM todo_item WHERE title LIKE :title")
+    @Query("SELECT * FROM todo_item WHERE title LIKE :title ORDER BY title")
     LiveData<List<ToDoItem>> findByTitle(String title);
 
     @Query("SELECT * FROM todo_item WHERE id LIKE :id")
     LiveData<ToDoItem> findById(Integer id);
 
-    @Query("SELECT * FROM TODO_ITEM WHERE title LIKE '%' || :query || '%'")
+    @Query("SELECT * FROM TODO_ITEM WHERE title LIKE '%' || :query || '%' ORDER BY title")
     LiveData<List<ToDoItem>> search(String query);
+
+    @Query("SELECT * FROM TODO_ITEM WHERE done = :done ORDER BY title")
+    LiveData<List<ToDoItem>> findByDone(boolean done);
 }

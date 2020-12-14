@@ -45,5 +45,9 @@ public class ToDoItemViewModel extends AndroidViewModel {
     public void delete(ToDoItem toDoItem) {
         toDoRepository.delete(toDoItem);
     }
+
+    public LiveData<List<ToDoItem>> findByDone(boolean done) {
+        return toDoRepository.findByDone(done);
+    }
 }
 

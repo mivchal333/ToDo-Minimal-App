@@ -49,11 +49,9 @@ class ToDoItemHolder extends RecyclerView.ViewHolder {
             intent.putExtra(EditToDoItemActivity.EXTRA_EDIT_TODO_ID, toDoItem.getId());
             mainActivity.startActivityForResult(intent, MainActivity.EDIT_TODO_ACTIVITY_REQUEST_CODE);
         });
-        todoItemDoneCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (toDoItem != null) {
-                toDoItem.setDone(isChecked);
-                toDoItemViewModel.update(toDoItem);
-            }
+        todoItemDoneCheckbox.setOnClickListener(v -> {
+            toDoItem.setDone(!toDoItem.isDone());
+            toDoItemViewModel.update(toDoItem);
         });
     }
 
